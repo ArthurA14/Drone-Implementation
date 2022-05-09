@@ -57,7 +57,7 @@ object Analysis {
     println("")
     
 
-    // Days of the moth with the most citizens recorded
+    // Days of the month with the most citizens recorded
     def citizensPerDay(df : DataFrame): DataFrame = {
       df.withColumn("Days",dayofmonth(col("datetimeReport")))
         .select(col("Days"),size(col("CitizensID")).as("CitizensCount"))
