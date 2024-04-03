@@ -4,28 +4,28 @@ QUESTIONS PRELIMINAIRES :
 -----------------------------------------------------------------------------------------------------------------------
 
 
-I. Quelles sont les contraintes tech et métiers qui pèsent sur les utilisateurs pour faire des statistiques ?
+I. Quelles sont les contraintes techniques et métiers qui pèsent sur les utilisateurs pour faire des statistiques ?
 
 
 Contraintes métiers : 
 
-    a. Chaque peacewatcher envoie un rapport toutes les minutes.
+    a. Chaque agent envoie un rapport toutes les minutes.
     b. Des pannes peuvent se produire.
        En effet, le composant de stockage des données doit être résilient : 
-       la tolérance aux pannes (nécessité de conserver tous les rapports du peacewatcher) est requise (nous ne devons perdre aucune donnée).
+       la tolérance aux pannes (nécessité de conserver tous les rapports de l'agent) est requise (nous ne devons perdre aucune donnée).
     c. Des erreurs d'appréciation de l'information par l'algorithme de la machine sont à prévoir. 
     d. De nombreux citoyens sont concentrés au même endroit (cela implique le traitement de gros volumes de données différentes).
        Plus généralement, nous devons stocker de grandes quantités de données et de façon permanente.
     e. D'un point de vue financier, la solution doit être relativement abordable.
-    f. Nous avons des besoins qui varient : en effet, moins de 1 % des rapports envoyés par les peacewatchers contiennent des alertes.
+    f. Nous avons des besoins qui varient : en effet, moins de 1 % des rapports envoyés par les agents contiennent des alertes.
 
-Contraintes tech : 
+Contraintes techniques : 
 
     a. CAP Theorem : 
         Le point b. ci-dessus implique de posséder la "PARTITION TOLERANCE" du CAP Theorem.
     b. Storage : 
         Nous avons ici besoin d'un composant distribué de "STORAGE". (Contrainte imposée par le point d. ci-dessus).
-        En effet, la somme de tous les rapports quotidiens de chaque peacewatcher pèsera 200 Go.
+        En effet, la somme de tous les rapports quotidiens de chaque agent pèsera 200 Go.
         -> L'utilisation d'un datalake comme composant de stockage permet de répondre aux points d. et e. ci-dessus.
            En particulier, un DATALAKE CLOUD permet de répondre à la contrainte financière de e.
            Enfin, toutes les données étant stockées au "même endroit", l'utilisation de plusieurs CLUSTERS de données d'une même architecture CLOUD fait sens.
@@ -45,59 +45,67 @@ II. Quelle contrainte métier l'architecture doit-elle satisfaire pour répondre
 Contraintes métiers : 
 
     a. Nous avons besoin d'un déclenchement rapide d'alertes à partir des données envoyées par les drones, 
-       afin que les peacewatchers puissent réagir le plus rapidement possible. 
+       afin que les agents puissent réagir le plus rapidement possible. 
        CAP Theorem : 
         Nous avons toujours besoin du P du CAP Theorem. 
-        Cette alerte doit être déclenchée le plus rapidement possible car un citoyen agité peut propager son manque de paix à d'autres citoyens. 
-        Ainsi, la réaction du pacificateur doit être la plus rapide possible. 
+        Cette alerte doit être déclenchée le plus rapidement possible car un potentiel émeutier peut propager une émeute rapidement. 
+        Ainsi, la réaction du drone doit être la plus rapide possible. 
         Notre donnée doit être avant tout "DISPONIBLE" plutôt que "cohérente" : 
-            en effet, mieux vaut faire une erreur sur l'identification d'un citoyen que le drone identifie comme un agitateur alors qu'il ne l'est pas, 
+            en effet, mieux vaut faire une erreur sur l'identification d'un citoyen que le drone identifie comme un potentiel émeutier alors qu'il ne l'est pas, 
             et intervenir, plutôt que l'inverse.
             -> Il faut se concentrer sur le "AVAILABILITY" et donc sur le PA du CAP Theorem. 
 
 Composant distribué : 
 
-    Nous devons utiliser un composant pour récupérer les données des peacewatchers en temps réel et les analyser. 
+    Nous devons utiliser un composant pour récupérer les données des agents en temps réel et les analyser. 
     En effet, nous devons traiter une très petite quantité de données (événement) sur un processus continu, 
     très fréquemment et très rapidement, presque en temps réel. 
     
     Le composant indiqué pour cette contrainte est le STREAMING. On peut penser au Stream-processing (Kafka).
-    Cf architecture Twitter vue en cours : on veut un flux pour toutes les informations et des sous-flux pour chaque peacewatcher. 
+    Cf architecture Twitter vue en cours : on veut un flux pour toutes les informations et des sous-flux pour chaque agent. 
 
 -----------------------------------------------------------------------------------------------------------------------
 
-III. Quelle(s) erreur(s) de Peaceland peut expliquer la tentative ratée ? 
+III. Quelle(s) erreur(s) du client peut expliquer la tentative ratée ? 
 
     Pour créer un POC du programme, une équipe de data scientists a été engagé. Cette équipe n'a pas été en mesure de mettre en place un programme évolutif capable de gérer la charge. 
 
     Cet échec peut s’expliquer par plusieurs raisons, dont nous pouvons apprendre :  
 
-    -> Il est probable qu’ils aient essayé de satisfaire aux trois conditions du théorème CAP. Mais celui-ci nous dit qu’un système distribué ne peut fournir que  deux des trois caractéristiques souhaitées : cohérence, disponibilité et tolérance au partitionnement. 
+    -> Il est probable qu’ils aient essayé de satisfaire aux trois conditions du théorème CAP. Mais celui-ci nous dit qu’un système distribué ne peut fournir que deux
+       des trois caractéristiques souhaitées : cohérence, disponibilité et tolérance au partitionnement. 
     
-    -> On peut émettre l’hypothèse que le profil de ces data scientists étaient très orientés algorithmes et qu’ils ne possédaient pas les compétences nécessaires en data engineering et en développement pour déployer une telle solution. 
+    -> On peut émettre l’hypothèse que le profil de ces data scientists étaient très orientés statistique et qu’ils ne possédaient pas les compétences nécessaires
+       en data engineering et en développement pour déployer une telle solution. 
     
-    -> Il se peut qu’ils n’aient pas utilisé le système de stockage approprié pour faire face à un tel volume de données ou encore qu’ils n’ont pas été en mesure de mettre en place un système de streaming convenable pour gérer les évènements de façon distincte. En effet, le projet requiert un processing en temps réel des données récupérées. 
+    -> Il se peut qu’ils n’aient pas utilisé le système de stockage approprié pour faire face à un tel volume de données ou encore qu’ils n’ont pas été en mesure de
+       mettre en place un système de streaming convenable pour gérer les évènements de façon distincte.
+       En effet, le projet requiert un processing en temps réel des données récupérées. 
     
 -----------------------------------------------------------------------------------------------------------------------
 
-IV. Peaceland a probablement oublié certaines informations techniques dans le rapport envoyé par le drone. Dans le futur, cette information pourrait aider Peaceland à rendre ses observateurs de la paix (peacewatcher) beaucoup plus efficaces. Quelles informations ? 
+IV. Le client a probablement oublié certaines informations techniques dans le rapport envoyé par le drone.
+    Dans le futur, cette information pourrait l'aider à rendre ses agents beaucoup plus efficaces. Quelles sont ces informations ? 
 
 Nous pouvons nous poser plusieurs questions qui sont les suivantes :  
 
-    	*De quelle manière est calculé le peacescore ? 
+    * De quelle manière est calculé le "score" ? 
         
-	--> Il est difficile de mettre en place un score objectif sachant que le peacescore est basé sur une analyse subjective du comportement d’un citoyen. De cette manière, on peut se retrouver avec des erreurs d’attributions du peacescore et se retrouvé avec un citoyen indiqué comme dangereux alors qu’il ne l’est pas. Il faudrait que les statistiques envoyées par les rapports soient le plus objective possible. 
+	--> Il est difficile de mettre en place un score objectif sachant que ce score est basé sur une analyse subjective du comportement d’un citoyen.
+        De cette manière, on peut se retrouver avec des erreurs d’attributions du score et avec un citoyen indiqué comme potentiel émeutier/dangereux alors qu’il ne l’est pas.
+        Il faudrait que les statistiques envoyées par les rapports soient le plus objectif possible. 
 
-    	*Comment savoir si un citoyen a besoin de trouver la paix ? (ou pas?) 
+    * Comment savoir si un citoyen est un émeutier ou simplement un citoyen agité ?
 
-	--> Il peut simplement être énervé de manière ponctuelle. Le mettre dans un camp pourrait devenir contre-productif s’il a la capacité de se “soigner” par lui-même de manière autonome. On pourrait donc imaginer une statistique sur la capacité d’un citoyen à se repentir / être autonome / apprendre de ses erreurs. 
+	--> Il peut simplement être agité de manière ponctuelle.
+        On pourrait donc imaginer une statistique sur la capacité d’un citoyen à revenir spontanément à un état de plénitude. 
 	
-	--> On pourrait imaginer une statistique indiquant le pourcentage de chance de récidive, ou bien le pourcentage de chance de propager sa nocivité à d’autres citoyens (à la manière de l’indicateur de propagation du COVID19 : le r0). On irait ensuite cibler en priorité les personnes avec ces forts pourcentages. 
+	--> On pourrait imaginer une statistique indiquant le pourcentage de chance de récidive, ou bien le pourcentage de chance de propager sa "nocivité" à d’autres citoyens
+        (à la manière de l’indicateur de propagation du COVID19 : le r0).
+        On irait ensuite cibler en priorité les personnes avec ces forts pourcentages. 
 
-       *Situation urgente : 
+    * Prévention: 
        
-	--> On pourrait équiper les drones de fléchettes tranquillisantes en cas de situations extrêmes, comme un comportement violent. 
-
-       *Prevention: 
-       
-	--> On pourrait aussi faire émettre un signal sonore au drone pour indiquer qu’il est dans la zone. On recherche ici “l’effet de radars de vitesse fixe”, quand il y en a, les gens roulent moins vites. Ici c’est pareil, quand un drone envoie un signal sonore, le citoyen prendra connaissance de cette information et aura tendance à mieux se comporter. 
+	--> On pourrait aussi faire émettre un signal sonore au drone pour indiquer qu’il est dans la zone.
+        On recherche ici “l’effet de radars de vitesse fixe”, quand il y en a, les gens roulent moins vites.
+        Ici c’est pareil, quand un drone envoie un signal sonore, le citoyen prendra connaissance de cette information et aura tendance à mieux se comporter. 
