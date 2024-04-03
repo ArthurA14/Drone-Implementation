@@ -3,9 +3,7 @@ QUESTIONS PRELIMINAIRES :
 
 -----------------------------------------------------------------------------------------------------------------------
 
-
 I. Quelles sont les contraintes techniques et métiers qui pèsent sur les utilisateurs pour faire des statistiques ?
-
 
 Contraintes métiers : 
 
