@@ -4,6 +4,11 @@
 
 2. Aller dans le dossier kafka :
 
+```bash
+arthur@DESKTOP-OBTCMJQ:/mnt/c$
+cd users/arthu/Efrei/DATA_ENGINEER/kafka_2.13-3.1.0
+```
+
 - A CHAQUE FOIS DANS UN TERMINAL DIFFÉRENT
 
 - start le service Zookeeper : ```bin/zookeeper-server-start.sh config/zookeeper.properties```
